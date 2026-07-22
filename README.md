@@ -1,10 +1,18 @@
 # 🔄 SwapStyle – Clothing Exchange & Swap Marketplace
 
+[![Frontend Deployment](https://img.shields.io/badge/Frontend-Vercel-black.svg?style=flat&logo=vercel)](https://swapstyle-clothing-swap-marketplace.vercel.app)
+[![Backend Deployment](https://img.shields.io/badge/Backend-Render-informational.svg?style=flat&logo=render)](https://swapstyle-clothing-swap-marketplace.onrender.com)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D%2018.0.0-blue.svg)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/database-MongoDB-green.svg)](https://www.mongodb.com/)
 [![React](https://img.shields.io/badge/frontend-React%20%28Vite%29-brightgreen.svg)](https://react.dev/)
 [![Socket.io](https://img.shields.io/badge/realtime-Socket.io-orange.svg)](https://socket.io/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+
+## 🔗 Live Deployments
+
+- **Frontend Application (Vercel):** [https://swapstyle-clothing-swap-marketplace.vercel.app](https://swapstyle-clothing-swap-marketplace.vercel.app)
+- **Backend API Service (Render):** [https://swapstyle-clothing-swap-marketplace.onrender.com](https://swapstyle-clothing-swap-marketplace.onrender.com)
+- **GitHub Repository:** [https://github.com/roqaiahanjum/swapstyle-clothing-swap-marketplace](https://github.com/roqaiahanjum/swapstyle-clothing-swap-marketplace)
 
 SwapStyle is a production-ready, full-stack MERN clothing exchange platform. Instead of buying clothes with money, users swap their unwanted garments directly with other members using a virtual point value system. This model promotes sustainable fashion, reduces waste, and establishes an active peer-to-peer exchange community.
 
@@ -313,4 +321,4 @@ npm run dev
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Authors
-* **Your Name** - *Full Stack Development & UI/UX* - [GitHub Profile](https://github.com/yourusername)
+* **Roqaiah Anjum E** - *Full Stack MERN Engineering & UI/UX* - [GitHub Profile](https://github.com/roqaiahanjum)
