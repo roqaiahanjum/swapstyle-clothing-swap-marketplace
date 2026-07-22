@@ -122,7 +122,7 @@ export default function Navbar() {
               <Link to="/profile" style={iconButtonStyle} title="My Profile">
                 {user.profilePicture ? (
                   <img
-                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `${import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000'}${user.profilePicture}`}
+                    src={user.profilePicture.startsWith('http') ? user.profilePicture : `${import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com'}${user.profilePicture}`}
                     alt={user.name}
                     style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }}
                   />

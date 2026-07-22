@@ -8,7 +8,7 @@ export default function ListingCard({ item, onDeleteSuccess }) {
   const { user } = useAuth();
   
   // Construct image source
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com';
   const imageSrc = item.images && item.images.length > 0
     ? (item.images[0].startsWith('http') ? item.images[0] : `${backendUrl}${item.images[0]}`)
     : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=60'; // High-quality fall-back clothes placeholder

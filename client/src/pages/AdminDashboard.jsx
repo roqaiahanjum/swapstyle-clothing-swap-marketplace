@@ -192,7 +192,7 @@ export default function AdminDashboard() {
     );
   }
 
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com';
 
   return (
     <div className="fadeIn container-custom" style={{ marginTop: '20px', paddingBottom: '60px' }}>

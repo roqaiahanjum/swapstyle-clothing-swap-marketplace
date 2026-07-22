@@ -65,7 +65,7 @@ export default function ListingDetail() {
 
   const isOwner = user && (user.id === item.owner._id || user._id === item.owner._id);
   const isAdmin = user && user.role === 'admin';
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com';
 
   // Extract images
   const images = item.images && item.images.length > 0

@@ -17,29 +17,41 @@ const app = express();
 const server = http.createServer(app);
 
 // CORS configuration
-const allowedOrigins = [
+const normalizeUrl = (url) => (url ? url.trim().replace(/\/+$/, '') : '');
+
+const defaultOrigins = [
   'http://localhost:5173',
   'https://swapstyle-clothing-swap-marketplace.vercel.app'
 ];
+
+let envOrigins = [];
 if (process.env.CLIENT_URL) {
-  const envOrigins = process.env.CLIENT_URL.split(',').map(url => url.trim());
-  envOrigins.forEach(url => {
-    if (url) {
-      if (!allowedOrigins.includes(url)) {
-        allowedOrigins.push(url);
-      }
-      const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
-      if (!allowedOrigins.includes(cleanUrl)) {
-        allowedOrigins.push(cleanUrl);
-      }
-    }
-  });
+  envOrigins = process.env.CLIENT_URL.split(',').map(normalizeUrl).filter(Boolean);
 }
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+const rawOrigins = [...defaultOrigins, ...envOrigins];
+const allowedOrigins = Array.from(new Set(rawOrigins.flatMap(url => {
+  const clean = normalizeUrl(url);
+  return [clean, `${clean}/`];
+})));
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = normalizeUrl(origin);
+    const isAllowed = allowedOrigins.some(allowed => normalizeUrl(allowed) === cleanOrigin);
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS error: Origin ${origin} is not allowed`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 // Body Parsers
 app.use(express.json());
@@ -59,11 +71,8 @@ mongoose.connect(mongoURI)
 
 // Socket.io Setup
 const io = socketIo(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
-    credentials: true
-  }
+  cors: corsOptions,
+  transports: ['websocket', 'polling']
 });
 
 app.set('io', io);

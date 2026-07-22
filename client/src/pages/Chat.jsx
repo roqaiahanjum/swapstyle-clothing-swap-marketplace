@@ -161,7 +161,7 @@ export default function Chat() {
   }
 
   const partner = (user.id === swap.fromUser._id || user._id === swap.fromUser._id) ? swap.toUser : swap.fromUser;
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com';
 
   const offeredImg = swap.offeredItem.images && swap.offeredItem.images.length > 0
     ? `${backendUrl}${swap.offeredItem.images[0]}`
