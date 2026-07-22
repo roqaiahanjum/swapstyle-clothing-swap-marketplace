@@ -19,12 +19,20 @@ export const SocketProvider = ({ children }) => {
       const socketUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://swapstyle-clothing-swap-marketplace.onrender.com');
       activeSocket = io(socketUrl, {
         transports: ['polling', 'websocket'],
-        withCredentials: true
+        withCredentials: true,
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000
       });
 
       activeSocket.on('connect', () => {
-        console.log('Socket.io connected:', activeSocket.id);
         activeSocket.emit('registerUser', user.id || user._id);
+      });
+
+      activeSocket.on('connect_error', (err) => {
+        // Silently handle temporary reconnection attempts
       });
 
       // Load initial notifications

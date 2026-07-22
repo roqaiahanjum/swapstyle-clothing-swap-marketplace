@@ -11,14 +11,11 @@ const socketRooms = new Map();
 
 module.exports = function (io) {
   io.on('connection', (socket) => {
-    console.log(`Socket connected: ${socket.id}`);
-
     // Register User
     socket.on('registerUser', (userId) => {
       if (userId) {
         socket.join(userId);
         onlineUsers.set(userId, socket.id);
-        console.log(`User registered: ${userId} with socket ${socket.id}`);
         // Broadcast user status changed (online)
         io.emit('userStatusChange', { userId, status: 'online' });
       }
@@ -28,7 +25,6 @@ module.exports = function (io) {
     socket.on('joinRoom', async ({ swapRequestId, userId }) => {
       socket.join(swapRequestId);
       socketRooms.set(socket.id, swapRequestId);
-      console.log(`Socket ${socket.id} (User: ${userId}) joined room: ${swapRequestId}`);
       
       // Optionally mark messages as read when joining
       try {
@@ -47,7 +43,6 @@ module.exports = function (io) {
     socket.on('leaveRoom', ({ swapRequestId }) => {
       socket.leave(swapRequestId);
       socketRooms.delete(socket.id);
-      console.log(`Socket ${socket.id} left room: ${swapRequestId}`);
     });
 
     // Send Message
@@ -122,8 +117,6 @@ module.exports = function (io) {
 
     // Disconnect
     socket.on('disconnect', () => {
-      console.log(`Socket disconnected: ${socket.id}`);
-      
       // Clean up maps
       for (const [userId, socketId] of onlineUsers.entries()) {
         if (socketId === socket.id) {
