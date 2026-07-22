@@ -15,24 +15,33 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     let activeSocket = null;
 
-    if (user) {
+    const userId = user?.id || user?._id;
+    if (userId) {
       const socketUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://swapstyle-clothing-swap-marketplace.onrender.com');
+      
       activeSocket = io(socketUrl, {
-        transports: ['polling', 'websocket'],
+        transports: ['websocket', 'polling'],
         withCredentials: true,
         reconnection: true,
         reconnectionAttempts: 10,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        timeout: 20000
+        randomizationFactor: 0.5,
+        timeout: 20000,
+        autoConnect: true
       });
 
       activeSocket.on('connect', () => {
-        activeSocket.emit('registerUser', user.id || user._id);
+        activeSocket.emit('registerUser', userId);
       });
 
-      activeSocket.on('connect_error', (err) => {
-        // Silently handle temporary reconnection attempts
+      // Handle temporary cold start or reconnect errors silently
+      activeSocket.on('connect_error', () => {
+        // Fallback or retry silently without console noise
+      });
+
+      activeSocket.on('reconnect_failed', () => {
+        console.error('Real-time socket connection failed after maximum retries.');
       });
 
       // Load initial notifications
