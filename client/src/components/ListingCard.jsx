@@ -8,10 +8,18 @@ export default function ListingCard({ item, onDeleteSuccess }) {
   const { user } = useAuth();
   
   // Construct image source
-  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || 'https://swapstyle-clothing-swap-marketplace.onrender.com';
-  const imageSrc = item.images && item.images.length > 0
-    ? (item.images[0].startsWith('http') ? item.images[0] : `${backendUrl}${item.images[0]}`)
-    : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=60'; // High-quality fall-back clothes placeholder
+  const backendUrl = import.meta.env.VITE_SOCKET_URL || (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '') || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://swapstyle-clothing-swap-marketplace.onrender.com');
+  
+  const resolveImgUrl = () => {
+    if (!item.images || item.images.length === 0) return 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=60';
+    const first = item.images[0];
+    if (!first) return 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500&auto=format&fit=crop&q=60';
+    if (first.startsWith('http://') || first.startsWith('https://')) return first;
+    const cleanPath = first.startsWith('/') ? first : `/${first}`;
+    return `${backendUrl}${cleanPath}`;
+  };
+
+  const imageSrc = resolveImgUrl();
 
   // Render status badge
   const renderStatusBadge = () => {

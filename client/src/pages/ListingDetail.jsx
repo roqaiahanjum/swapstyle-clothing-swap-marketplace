@@ -98,6 +98,10 @@ export default function ListingDetail() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s ease', cursor: 'zoom-in' }}
                 onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.06)'}
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=700&auto=format&fit=crop&q=60';
+                }}
               />
             </div>
             

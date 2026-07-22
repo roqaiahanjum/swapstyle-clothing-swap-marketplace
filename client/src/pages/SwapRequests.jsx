@@ -199,13 +199,17 @@ export default function SwapRequests() {
             const partnerName = activeTab === 'incoming' ? swap.fromUser?.name : swap.toUser?.name;
             const partnerLocation = activeTab === 'incoming' ? swap.fromUser?.location?.city : swap.toUser?.location?.city;
 
-            const offeredImg = swap.offeredItem.images && swap.offeredItem.images.length > 0
-              ? (swap.offeredItem.images[0].startsWith('http') ? swap.offeredItem.images[0] : `${backendUrl}${swap.offeredItem.images[0]}`)
-              : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
-            
-            const requestedImg = swap.requestedItem.images && swap.requestedItem.images.length > 0
-              ? (swap.requestedItem.images[0].startsWith('http') ? swap.requestedItem.images[0] : `${backendUrl}${swap.requestedItem.images[0]}`)
-              : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
+            const resolveImgUrl = (imgArr) => {
+              if (!imgArr || imgArr.length === 0) return 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
+              const first = imgArr[0];
+              if (!first) return 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
+              if (first.startsWith('http://') || first.startsWith('https://')) return first;
+              const cleanPath = first.startsWith('/') ? first : `/${first}`;
+              return `${backendUrl}${cleanPath}`;
+            };
+
+            const offeredImg = resolveImgUrl(swap.offeredItem?.images);
+            const requestedImg = resolveImgUrl(swap.requestedItem?.images);
 
             return (
               <div key={swap._id} className="glass-card" style={{ padding: '24px' }}>
@@ -241,13 +245,21 @@ export default function SwapRequests() {
                   
                   {/* Offered Item */}
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <img src={offeredImg} alt={swap.offeredItem.title} style={thumbnailStyle} />
+                    <img 
+                      src={offeredImg} 
+                      alt={swap.offeredItem?.title || 'Offered Item'} 
+                      style={thumbnailStyle} 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
+                      }}
+                    />
                     <div>
                       <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: '600', textTransform: 'uppercase' }}>Offered item</span>
-                      <h4 style={{ fontSize: '0.95rem', margin: '4px 0', color: 'white' }}>{swap.offeredItem.title}</h4>
+                      <h4 style={{ fontSize: '0.95rem', margin: '4px 0', color: 'white' }}>{swap.offeredItem?.title}</h4>
                       <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                        Brand: {swap.offeredItem.brand} • Size: {swap.offeredItem.size}<br />
-                        Val: <strong>{swap.offeredItem.estimatedSwapValue} pts</strong>
+                        Brand: {swap.offeredItem?.brand} • Size: {swap.offeredItem?.size}<br />
+                        Val: <strong>{swap.offeredItem?.estimatedSwapValue} pts</strong>
                       </p>
                     </div>
                   </div>
@@ -256,7 +268,15 @@ export default function SwapRequests() {
 
                   {/* Requested Item */}
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                    <img src={requestedImg} alt={swap.requestedItem.title} style={thumbnailStyle} />
+                    <img 
+                      src={requestedImg} 
+                      alt={swap.requestedItem?.title || 'Requested Item'} 
+                      style={thumbnailStyle} 
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
+                      }}
+                    />
                     <div>
                       <span style={{ fontSize: '0.75rem', color: 'var(--secondary)', fontWeight: '600', textTransform: 'uppercase' }}>Requested item</span>
                       <h4 style={{ fontSize: '0.95rem', margin: '4px 0', color: 'white' }}>{swap.requestedItem.title}</h4>
