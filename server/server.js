@@ -1,3 +1,8 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -12,9 +17,27 @@ const app = express();
 const server = http.createServer(app);
 
 // CORS configuration
-const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://swapstyle-clothing-swap-marketplace.vercel.app'
+];
+if (process.env.CLIENT_URL) {
+  const envOrigins = process.env.CLIENT_URL.split(',').map(url => url.trim());
+  envOrigins.forEach(url => {
+    if (url) {
+      if (!allowedOrigins.includes(url)) {
+        allowedOrigins.push(url);
+      }
+      const cleanUrl = url.endsWith('/') ? url.slice(0, -1) : url;
+      if (!allowedOrigins.includes(cleanUrl)) {
+        allowedOrigins.push(cleanUrl);
+      }
+    }
+  });
+}
+
 app.use(cors({
-  origin: allowedOrigin,
+  origin: allowedOrigins,
   credentials: true
 }));
 
@@ -26,7 +49,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Connect to MongoDB
-const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/swapstyle';
+const mongoURI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/swapstyle';
 mongoose.connect(mongoURI)
   .then(() => console.log('Successfully connected to MongoDB.'))
   .catch(err => {
@@ -37,7 +60,7 @@ mongoose.connect(mongoURI)
 // Socket.io Setup
 const io = socketIo(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }

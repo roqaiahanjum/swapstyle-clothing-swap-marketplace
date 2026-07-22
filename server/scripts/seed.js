@@ -1,3 +1,8 @@
+const dns = require('dns');
+dns.setServers(['8.8.8.8', '1.1.1.1']);
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
@@ -9,7 +14,7 @@ const Message = require('../models/Message');
 const Notification = require('../models/Notification');
 
 async function seedDB() {
-  const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/swapstyle';
+  const mongoURI = process.env.MONGODB_URI || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/swapstyle';
   
   console.log('Connecting to database...');
   await mongoose.connect(mongoURI);
@@ -121,9 +126,9 @@ async function seedDB() {
     gender: 'Women',
     color: 'Floral',
     images: [
-      'https://images.unsplash.com/photo-1584273143981-44c23392c6ae?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1607345366928-199e5760f05e?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1548624149-f9b1859aa7d0?w=600&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1618244972963-dbee1a7edc95?w=600&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1598554747436-c9293d6a588f?w=600&auto=format&fit=crop&q=80'
     ],
     estimatedSwapValue: 56,
     owner: alice._id,
@@ -163,7 +168,7 @@ async function seedDB() {
     images: [
       'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1566150905458-1bf1fc15a6a0?w=600&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=600&auto=format&fit=crop&q=80'
     ],
     estimatedSwapValue: 75,
     owner: alice._id,
