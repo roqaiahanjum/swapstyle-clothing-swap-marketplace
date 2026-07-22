@@ -224,8 +224,8 @@ erDiagram
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/swapstyle.git
-cd swapstyle
+git clone https://github.com/roqaiahanjum/swapstyle-clothing-swap-marketplace.git
+cd swapstyle-clothing-swap-marketplace
 ```
 
 ### Step 2: Install Dependencies
@@ -245,13 +245,13 @@ Create a `.env` in the `/server` folder:
 PORT=5000
 MONGO_URI=mongodb://127.0.0.1:27017/swapstyle
 JWT_SECRET=production_jwt_secret_hash_2026
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=http://localhost:5173,https://swapstyle-clothing-swap-marketplace.vercel.app
 ```
 
 Create a `.env` in the `/client` folder:
 ```ini
-VITE_API_URL=http://localhost:5000/api
-VITE_SOCKET_URL=http://localhost:5000
+VITE_API_URL=https://swapstyle-clothing-swap-marketplace.onrender.com/api
+VITE_SOCKET_URL=https://swapstyle-clothing-swap-marketplace.onrender.com
 ```
 
 ### Step 4: Run the Database Seeder
@@ -294,16 +294,16 @@ npm run dev
 ## 📸 Screenshots
 
 ### Home Page
-`![Home Page](https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1000&auto=format&fit=crop&q=80)`
+![Home Page](https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1000&auto=format&fit=crop&q=80)
 
 ### Marketplace
-`![Marketplace](https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1000&auto=format&fit=crop&q=80)`
+![Marketplace](https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1000&auto=format&fit=crop&q=80)
 
 ### Listing Details
-`![Listing Details](https://images.unsplash.com/photo-1542272604-787c3835535d?w=1000&auto=format&fit=crop&q=80)`
+![Listing Details](https://images.unsplash.com/photo-1542272604-787c3835535d?w=1000&auto=format&fit=crop&q=80)
 
 ### Swap Chat
-`![Swap Chat](https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&auto=format&fit=crop&q=80)`
+![Swap Chat](https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=1000&auto=format&fit=crop&q=80)
 
 ---
 
