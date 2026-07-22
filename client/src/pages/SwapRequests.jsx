@@ -200,11 +200,11 @@ export default function SwapRequests() {
             const partnerLocation = activeTab === 'incoming' ? swap.fromUser?.location?.city : swap.toUser?.location?.city;
 
             const offeredImg = swap.offeredItem.images && swap.offeredItem.images.length > 0
-              ? `${backendUrl}${swap.offeredItem.images[0]}`
+              ? (swap.offeredItem.images[0].startsWith('http') ? swap.offeredItem.images[0] : `${backendUrl}${swap.offeredItem.images[0]}`)
               : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
             
             const requestedImg = swap.requestedItem.images && swap.requestedItem.images.length > 0
-              ? `${backendUrl}${swap.requestedItem.images[0]}`
+              ? (swap.requestedItem.images[0].startsWith('http') ? swap.requestedItem.images[0] : `${backendUrl}${swap.requestedItem.images[0]}`)
               : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300';
 
             return (
