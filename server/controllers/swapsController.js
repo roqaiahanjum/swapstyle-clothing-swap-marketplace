@@ -13,52 +13,62 @@ const sendRealTimeNotification = (req, userId, notification) => {
 // Create Swap Request
 exports.createSwapRequest = async (req, res, next) => {
   try {
-    const { offeredItemId, requestedItemId } = req.body;
+    const mongoose = require('mongoose');
+    const offeredItemId = req.body.offeredItemId || req.body.offeredItem;
+    const requestedItemId = req.body.requestedItemId || req.body.requestedItem;
 
     if (!offeredItemId || !requestedItemId) {
-      return res.status(400).json({ message: 'Both offered and requested items are required' });
+      return res.status(400).json({ message: 'Both offered and requested items are required.' });
     }
+
+    if (!mongoose.Types.ObjectId.isValid(offeredItemId) || !mongoose.Types.ObjectId.isValid(requestedItemId)) {
+      return res.status(400).json({ message: 'Invalid item ID format provided.' });
+    }
+
+    const currentUserId = (req.user.id || req.user._id).toString();
 
     // Verify offered item belongs to logged-in user and is available
     const offeredItem = await ClothingItem.findById(offeredItemId);
     if (!offeredItem) {
-      return res.status(404).json({ message: 'Offered item not found' });
+      return res.status(404).json({ message: 'Offered item not found.' });
     }
-    if (offeredItem.owner.toString() !== req.user.id) {
-      return res.status(403).json({ message: 'You must own the offered item' });
+    if (offeredItem.owner.toString() !== currentUserId) {
+      return res.status(403).json({ message: 'You must own the offered item to propose a swap.' });
     }
     if (offeredItem.status !== 'Available') {
-      return res.status(400).json({ message: 'Your offered item is already swap-locked or swapped' });
+      return res.status(400).json({ message: 'Your offered item is already swap-locked or swapped.' });
     }
 
     // Verify requested item exists and is available
     const requestedItem = await ClothingItem.findById(requestedItemId);
     if (!requestedItem) {
-      return res.status(404).json({ message: 'Requested item not found' });
+      return res.status(404).json({ message: 'Requested item not found.' });
     }
     if (requestedItem.status !== 'Available') {
-      return res.status(400).json({ message: 'Requested item is no longer available for swapping' });
+      return res.status(400).json({ message: 'Requested item is no longer available for swapping.' });
     }
 
     // Prevent swap with self
-    if (requestedItem.owner.toString() === req.user.id) {
-      return res.status(400).json({ message: 'You cannot swap items with yourself' });
+    if (requestedItem.owner.toString() === currentUserId) {
+      return res.status(400).json({ message: 'You cannot swap items with yourself.' });
     }
 
-    // Check if swap request already exists between these items
+    // Check if swap request already exists between these items (bidirectional check)
     const existingRequest = await SwapRequest.findOne({
-      offeredItem: offeredItemId,
-      requestedItem: requestedItemId,
+      $or: [
+        { offeredItem: offeredItemId, requestedItem: requestedItemId },
+        { offeredItem: requestedItemId, requestedItem: offeredItemId }
+      ],
       status: { $in: ['Pending', 'Accepted'] }
     });
 
     if (existingRequest) {
-      return res.status(400).json({ message: 'A swap request for these items is already active' });
+      return res.status(400).json({ message: 'A swap request for these items is already active.' });
     }
 
     // Create Swap Request
     const swapRequest = new SwapRequest({
-      fromUser: req.user.id,
+      fromUser: currentUserId,
       toUser: requestedItem.owner,
       offeredItem: offeredItemId,
       requestedItem: requestedItemId,
@@ -68,15 +78,22 @@ exports.createSwapRequest = async (req, res, next) => {
     await swapRequest.save();
 
     // Create Notification for the owner of requested item
-    const notification = new Notification({
-      user: requestedItem.owner,
-      text: `You have received a new swap request offering "${offeredItem.title}" for your "${requestedItem.title}"`,
-      link: '/swaps'
-    });
-    await notification.save();
-    sendRealTimeNotification(req, requestedItem.owner, notification);
+    try {
+      const notification = new Notification({
+        user: requestedItem.owner,
+        text: `You have received a new swap request offering "${offeredItem.title}" for your "${requestedItem.title}"`,
+        link: '/swaps'
+      });
+      await notification.save();
+      sendRealTimeNotification(req, requestedItem.owner, notification);
+    } catch (notifErr) {
+      console.warn('Notification creation/socket notification warning (non-fatal):', notifErr.message);
+    }
 
-    res.status(201).json(swapRequest);
+    res.status(201).json({
+      message: 'Swap proposal created successfully!',
+      swapRequest
+    });
   } catch (err) {
     next(err);
   }

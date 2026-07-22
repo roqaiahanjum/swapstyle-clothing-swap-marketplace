@@ -46,6 +46,12 @@ export default function SwapModal({ isOpen, onClose, targetItem, onSuccess }) {
       setError('Please select an item to swap.');
       return;
     }
+
+    const targetItemId = targetItem?._id || targetItem?.id;
+    if (!targetItemId) {
+      setError('Target item is invalid.');
+      return;
+    }
     
     setSubmitting(true);
     setError('');
@@ -53,13 +59,14 @@ export default function SwapModal({ isOpen, onClose, targetItem, onSuccess }) {
     try {
       await createSwapRequest({
         offeredItemId: selectedItemId,
-        requestedItemId: targetItem._id
+        requestedItemId: targetItemId
       });
-      onSuccess();
+      if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
       console.error('Error submitting swap request:', err);
-      setError(err.response?.data?.message || 'Failed to submit swap request. Please try again.');
+      const serverMsg = err.response?.data?.message || err.message || 'Failed to submit swap request. Please try again.';
+      setError(serverMsg);
     } finally {
       setSubmitting(false);
     }
